@@ -1,38 +1,80 @@
-Role Name
-=========
+# Ansible Role: Vector
 
-A brief description of the role goes here.
+[![Ansible Galaxy](https://img.shields.io/badge/ansible--galaxy-vector--role-blue.svg)](https://galaxy.ansible.com/stomplego/vector-role)
 
-Requirements
-------------
+## Описание
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+Роль для установки и настройки Vector — высокопроизводительного конвейера для сбора, трансформации и маршрутизации логов и метрик.
 
-Role Variables
---------------
+## Требования
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- Ansible >= 2.9
+- Ubuntu 20.04 / 22.04 / 24.04
+- Минимум 256 МБ свободного места
+- Доступ в интернет для скачивания бинарных файлов
 
-Dependencies
-------------
+## Переменные роли
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Все переменные, которые можно переопределить, хранятся в `defaults/main.yml`:
 
-Example Playbook
-----------------
+| Имя | Значение по умолчанию | Описание |
+|-----|----------------------|----------|
+| `vector_version` | `0.48.0` | Версия Vector для установки |
+| `vector_config_dir` | `/etc/vector` | Директория конфигурации |
+| `vector_data_dir` | `/var/lib/vector` | Директория для данных |
+| `vector_log_dir` | `/var/log/vector` | Директория для логов |
+| `vector_user` | `vector` | Системный пользователь |
+| `vector_group` | `vector` | Системная группа |
+| `vector_source_type` | `demo_logs` | Тип источника (`demo_logs`, `file`, `journald`) |
+| `vector_source_format` | `apache_common` | Формат логов для демо-источника |
+| `vector_source_interval` | `1` | Интервал генерации логов (секунды) |
+| `vector_sink_type` | `console` | Тип приёмника (`console`, `http`, `prometheus_exporter`) |
+| `vector_sink_target` | `stdout` | Целевой вывод для console |
+| `vector_sink_encoding` | `text` | Формат кодирования (`text`, `json`) |
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+### Внутренние переменные (в `vars/main.yml`)
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+| Имя | Описание |
+|-----|----------|
+| `vector_download_url` | URL для скачивания бинарного файла |
+| `vector_binary_path` | `/usr/local/bin/vector` |
+| `vector_systemd_path` | `/etc/systemd/system/vector.service` |
+| `vector_dependencies` | Список зависимых пакетов |
 
-License
--------
+## Зависимости
 
-BSD
+Нет внешних зависимостей.
 
-Author Information
-------------------
+## Пример playbook
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+### Базовая установка
+
+```yaml
+---
+- name: Установка Vector
+  hosts: all
+  become: yes
+  roles:
+    - role: stomplego.vector-role
+
+### Переопределение переменных
+```yaml
+- hosts: log_servers
+  roles:
+    - role: vector-role
+      vars:
+        vector_source_type: file
+        vector_source_file_path: /var/log/nginx/access.log
+        vector_sink_type: http
+        vector_sink_uri: https://logs.example.com/ingest
+        vector_sink_method: post
+
+### Запуск с метриками Prometheus
+```yaml
+- hosts: monitoring
+  roles:
+    - role: vector-role
+      vars:
+        vector_source_type: internal_metrics
+        vector_sink_type: prometheus_exporter
+        vector_sink_port: 9598
