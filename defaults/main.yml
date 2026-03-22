@@ -1,0 +1,29 @@
+---
+# Версия Vector для установки
+vector_version: "0.47.0"
+
+# Директории
+vector_config_dir: /etc/vector
+vector_data_dir: /var/lib/vector
+vector_log_dir: /var/log/vector
+
+# Пользователь и группа
+vector_user: vector
+vector_group: vector
+
+# Параметры конфигурации
+vector_config_template: vector.toml.j2
+vector_service_name: vector
+
+# Параметры источника данных
+vector_source_type: demo_logs
+vector_source_format: apache_common
+vector_source_interval: 1
+
+# Параметры вывода
+vector_sink_type: console
+vector_sink_target: stdout
+vector_sink_encoding: text
+
+# Архитектура для скачивания
+vector_arch: "{{ 'amd64' if ansible_architecture == 'x86_64' else ansible_architecture }}"

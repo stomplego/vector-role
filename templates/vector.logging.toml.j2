@@ -1,0 +1,8 @@
+# Vector logging configuration
+# Managed by Ansible
+
+[sinks.logging]
+type = "file"
+inputs = ["{{ vector_source_type }}"]
+path = "{{ vector_log_dir }}/vector.log"
+encoding.codec = "json"

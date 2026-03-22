@@ -1,0 +1,31 @@
+# Vector configuration file
+# Managed by Ansible
+# Generated from template: vector.toml.j2
+
+data_dir = "{{ vector_data_dir }}"
+
+# Source configuration
+[sources.{{ vector_source_type }}]
+type = "{{ vector_source_type }}"
+{% if vector_source_type == "demo_logs" %}
+format = "{{ vector_source_format }}"
+interval = {{ vector_source_interval }}
+{% elif vector_source_type == "file" %}
+include = ["{{ vector_source_file_path }}"]
+{% elif vector_source_type == "journald" %}
+include_units = ["{{ vector_source_journald_units }}"]
+{% endif %}
+
+# Sink configuration
+[sinks.{{ vector_sink_type }}]
+type = "{{ vector_sink_type }}"
+inputs = ["{{ vector_source_type }}"]
+{% if vector_sink_type == "console" %}
+target = "{{ vector_sink_target }}"
+encoding.codec = "{{ vector_sink_encoding }}"
+{% elif vector_sink_type == "http" %}
+uri = "{{ vector_sink_uri }}"
+method = "{{ vector_sink_method | default('post') }}"
+{% elif vector_sink_type == "prometheus_exporter" %}
+address = "0.0.0.0:{{ vector_sink_port | default(9598) }}"
+{% endif %}

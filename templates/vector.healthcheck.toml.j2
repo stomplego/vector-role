@@ -1,0 +1,12 @@
+# Vector healthcheck configuration
+# Managed by Ansible
+
+[sinks.healthcheck]
+type = "console"
+inputs = ["internal_metrics"]
+target = "stdout"
+encoding.codec = "json"
+
+[sources.internal_metrics]
+type = "internal_metrics"
+namespace = "vector"

@@ -1,0 +1,20 @@
+---
+# Внутренние переменные роли (не рекомендуется переопределять)
+
+# URL для скачивания Vector
+vector_download_url: "https://github.com/vectordotdev/vector/releases/download/v{{ vector_version }}/vector-{{ vector_version }}-{{ vector_arch }}-unknown-linux-gnu.tar.gz"
+
+# Пути для установки
+vector_binary_path: /usr/local/bin/vector
+vector_systemd_path: /etc/systemd/system/vector.service
+
+# Зависимости
+vector_dependencies:
+  - curl
+  - systemd
+  - gnupg
+  - apt-transport-https
+
+# Проверка портов (не используются в демо-режиме)
+vector_api_port: 8686
+vector_internal_metrics_port: 9598
